@@ -54,7 +54,7 @@ init_dirs() {
     mkdir -p $OUTPUT_DIR/ports
     mkdir -p $OUTPUT_DIR/webservers
     mkdir -p $OUTPUT_DIR/urls
-    #mkdir -p $OUTPUT_DIR/vulnerabilities
+    mkdir -p $OUTPUT_DIR/vulnerabilities
     mkdir -p $OUTPUT_DIR/js
     mkdir -p $OUTPUT_DIR/git
     mkdir -p $OUTPUT_DIR/cloud
@@ -93,9 +93,9 @@ subdomain_enum() {
     random_delay
     
     # Layer 3: DNS Brute Forcing
-    #echo -e "${YELLOW}[+] DNS brute forcing...${NC}"
-    #puredns bruteforce ./subdomains.txt $TARGET --resolvers ./resolvers.txt | anew $OUTPUT_DIR/subdomains/dns_brute.txt
-    #random_delay
+    echo -e "${YELLOW}[+] DNS brute forcing...${NC}"
+    puredns bruteforce ./subdomains.txt $TARGET --resolvers ./resolvers.txt | anew $OUTPUT_DIR/subdomains/dns_brute.txt
+    random_delay
     
     # Layer 4: Amass Intensive
     echo -e "${YELLOW}[+] Amass intensive enumeration...${NC}"
@@ -167,7 +167,6 @@ web_discovery() {
     done
 }
 
-'END_COMMENT
 # Phase 5: Directory & File Brute Forcing
 directory_brute() {
     echo -e "${CYAN}[PHASE 5] Directory & File Discovery${NC}"
@@ -188,21 +187,20 @@ directory_brute() {
         ffuf -u "https://${sub}/FUZZ" -w ./backup_files.txt -t $THREADS -rate $RATE_LIMIT -o "$OUTPUT_DIR/urls/ffuf_backup_${safe_sub}.json"
     done < "$OUTPUT_DIR/subdomains/all_subs.txt"
 }
-END_COMMENT'
 
 # Phase 6: Cloud Infrastructure Recon
 cloud_recon() {
     echo -e "${CYAN}[PHASE 6] Cloud Infrastructure Discovery${NC}"
     
     # AWS S3 Buckets
-    #echo -e "${YELLOW}[+] AWS S3 bucket discovery...${NC}"
-    #cat $OUTPUT_DIR/subdomains/all_subs.txt | aws-s3-enumerator | anew $OUTPUT_DIR/cloud/s3_buckets.txt
+    echo -e "${YELLOW}[+] AWS S3 bucket discovery...${NC}"
+    cat $OUTPUT_DIR/subdomains/all_subs.txt | aws-s3-enumerator | anew $OUTPUT_DIR/cloud/s3_buckets.txt
     
     # CloudFlare Bypass
-    #echo -e "${YELLOW}[+] CloudFlare bypass checks...${NC}"
-    #cat $OUTPUT_DIR/webservers/live_urls.txt | while read url; do
-    #    cloudflared-bypasser $url | anew $OUTPUT_DIR/cloud/cf_bypass.txt
-    #done
+    echo -e "${YELLOW}[+] CloudFlare bypass checks...${NC}"
+    cat $OUTPUT_DIR/webservers/live_urls.txt | while read url; do
+        cloudflared-bypasser $url | anew $OUTPUT_DIR/cloud/cf_bypass.txt
+    done
     
     # Azure Discovery
     echo -e "${YELLOW}[+] Azure resource discovery...${NC}"
@@ -210,7 +208,6 @@ cloud_recon() {
 }
 
 # Phase 7: Vulnerability Scanning
-'END_COMMENT
 vulnerability_scan() {
     echo -e "${CYAN}[PHASE 7] Automated Vulnerability Scanning${NC}"
     
@@ -231,15 +228,14 @@ vulnerability_scan() {
     echo -e "${YELLOW}[+] XSS parameter testing...${NC}"
     cat $OUTPUT_DIR/urls/parameters.txt | dalfox pipe --silence --skip-bav -o $OUTPUT_DIR/vulnerabilities/xss.txt
 }
-END_COMMENT'
 
 # Phase 8: Advanced Reconnaissance
 advanced_recon() {
     echo -e "${CYAN}[PHASE 8] Advanced Reconnaissance${NC}"
     
     # GitHub Recon
-    #echo -e "${YELLOW}[+] GitHub reconnaissance...${NC}"
-    #python3 /opt/tools/gitdorker/GitDorker.py -t <GITHUB_TOKEN> -q $TARGET -d /opt/tools/gitdorker/Dorks/alldorksv3 -o $OUTPUT_DIR/git/gitdorker_results.txt
+    echo -e "${YELLOW}[+] GitHub reconnaissance...${NC}"
+    python3 /opt/tools/gitdorker/GitDorker.py -t <GITHUB_TOKEN> -q $TARGET -d /opt/tools/gitdorker/Dorks/alldorksv3 -o $OUTPUT_DIR/git/gitdorker_results.txt
     
     # GraphQL Endpoint Discovery
     echo -e "${YELLOW}[+] GraphQL endpoint discovery...${NC}"
